@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐶 StrayCare - User Dashboard</title>
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: #f5f7fa;
+    min-height: 100vh;
+}
+
+.navbar {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+    padding: 1rem 2rem;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.navbar h1 {
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.navbar-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+}
+
+.navbar button {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.navbar button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.notification-container {
+    position: relative;
+}
+
+.notification-btn {
+    position: relative;
+    padding-right: 2rem !important;
+}
+
+.notifications-panel {
+    display: none !important; /* Ensures it's always hidden */
+}
+
+.notification {
+    display: none !important; /* Ensures notification does not appear */
+}
+
+.container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h2 {
+    color: #2c3e50;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    color: #ff6b6b;
+    font-weight: bold;
+    margin: 0.5rem 0;
+}
+
+.stat-label {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+.report-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.report-form h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #ff6b6b;
+}
+
+.form-group textarea {
+    height: 120px;
+    resize: vertical;
+}
+
+.image-preview {
+    max-width: 200px;
+    margin-top: 1rem;
+    display: none;
+    border-radius: 8px;
+}
+
+.btn {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.3s ease;
+    width: 100%;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .report-form,
+    .my-reports,
+    .approved-reports {
+        padding: 1.5rem;
+    }
+}
+
+/* Report Card Styles */
+.report-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.report-card:hover {
+    transform: translateY(-5px);
+}
+
+.report-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 1px solid #eee;
+}
+
+.report-card .report-status {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: capitalize;
+}
+
+.report-card .status-pending {
+    background: #ffeaa7;
+    color: #b7791f;
+}
+
+.report-card .status-approved {
+    background: #c6f6d5;
+    color: #2f855a;
+}
+
+.report-card h3 {
+    padding: 1.5rem 1.5rem 0.5rem;
+    color: #2d3748;
+    font-size: 1.25rem;
+}
+
+.report-card .report-details {
+    padding: 0 1.5rem 1.5rem;
+}
+
+.report-card .report-details p {
+    margin: 0.5rem 0;
+    color: #4a5568;
+    font-size: 0.95rem;
+}
+
+.report-card .report-details strong {
+    color: #2d3748;
+    font-weight: 600;
+}
+
+/* Grid Layout for Reports */
+#reportsList,
+#approvedReportsList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem 0;
+}
+
+.my-reports,
+.approved-reports {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.my-reports h2,
+.approved-reports h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #ff6b6b;
+    padding-bottom: 0.5rem;
+    display: inline-block;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #reportsList,
+    #approvedReportsList {
+        grid-template-columns: 1fr;
+    }
+
+    .report-card {
+        margin-bottom: 1rem;
+    }
+
+    .report-card img {
+        height: 180px;
+    }
+
+    .my-reports,
+    .approved-reports {
+        padding: 1.5rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>StrayCare</h1>
+        <div class="navbar-buttons">
+            <button onclick="window.location.href='home.html'">🏠 Home</button>
+            <div class="notification-container">
+                <button class="notification-btn" onclick="toggleNotifications()">
+                    🔔 Notifications
+                    <span class="notification-badge" id="notificationBadge">0</span>
+                </button>
+                <div class="notifications-panel" id="notificationsPanel">
+                    Notifications will be added here
+                </div>
+            </div>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard-grid">
+            <div class="card">
+                <h2>📝 My Reports</h2>
+                <div class="stat-number" id="myReports">0</div>
+                <div class="stat-label">Reports submitted by you</div>
+            </div>
+            <div class="card">
+                <h2>✅ Approved</h2>
+                <div class="stat-number" id="approvedReports">0</div>
+                <div class="stat-label">Approved reports</div>
+            </div>
+            <div class="card">
+                <h2>⏳ Pending</h2>
+                <div class="stat-number" id="pendingReports">0</div>
+                <div class="stat-label">Reports under review</div>
+            </div>
+        </div>
+
+        <div class="report-form">
+            <h2>Report a Stray Dog</h2>
+            <form id="reportForm" onsubmit="handleReportSubmit(event)">
+                <div class="form-group">
+                    <label for="reportTitle">Title</label>
+                    <input type="text" id="reportTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="reportLocation">Location</label>
+                    <input type="text" id="reportLocation" required>
+                </div>
+                <div class="form-group">
+                    <label for="reportContact">Contact Number</label>
+                    <input type="tel" id="reportContact" maxlength="11" pattern="[0-9]*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required placeholder="Enter your phone number">
+                </div>
+                <div class="form-group">
+                    <label for="reportFacebook">Facebook Account (Optional)</label>
+                    <input type="text" id="reportFacebook" placeholder="Enter your Facebook username or profile URL">
+                </div>
+                <div class="form-group">
+                    <label for="reportDescription">Description</label>
+                    <textarea id="reportDescription" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="reportPhoto">Photo (Optional)</label>
+                    <input type="file" id="reportPhoto" accept="image/*" onchange="previewImage(event)">
+                    <img id="imagePreview" class="image-preview">
+                </div>
+                <div class="form-group">
+                    <label for="reportUrgency">Urgency Level</label>
+                    <select id="reportUrgency" required>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Submit Report</button>
+            </form>
+        </div>
+
+        <div class="my-reports">
+            <h2>My Reports</h2>
+            <div id="reportsList">
+            </div>
+        </div>
+
+        <div class="approved-reports">
+            <h2>Approved Reports</h2>
+            <div id="approvedReportsList"></div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Check user authentication
+        function checkAuth() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser || currentUser.role !== 'user') {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Show notification
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.className = `notification ${isError ? 'error' : 'success'}`;
+            notification.innerHTML = `
+                <span class="notification-icon">${isError ? '❌' : '✓'}</span>
+                <span>${message}</span>
+            `;
+            notification.style.display = 'flex';
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 300);
+            }, 3000);
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Preview image before upload
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('imagePreview');
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Handle report submission
+        function handleReportSubmit(event) {
+            event.preventDefault();
+            
+            // Get form values
+            const title = document.getElementById('reportTitle').value;
+            const location = document.getElementById('reportLocation').value;
+            const contact = document.getElementById('reportContact').value;
+            const facebook = document.getElementById('reportFacebook').value;
+            const description = document.getElementById('reportDescription').value;
+            const urgency = document.getElementById('reportUrgency').value;
+            const photoInput = document.getElementById('reportPhoto');
+            const photo = photoInput.files[0];
+
+            // Validate contact number
+            if (!/^[0-9]+$/.test(contact)) {
+                showNotification('Contact number must contain only digits', true);
+                return;
+            }
+
+            // Get current user
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                showNotification('Please login to submit a report', true);
+                return;
+            }
+
+            // Get existing reports
+            const reports = JSON.parse(localStorage.getItem('reports')) || [];
+
+            // Create new report
+            const newReport = {
+                id: Date.now(),
+                title,
+                location,
+                contact,
+                facebook,
+                description,
+                urgency,
+                status: 'pending',
+                userId: currentUser.email,
+                userName: currentUser.name,
+                date: new Date().toISOString(),
+                photo: null
+            };
+
+            // Handle photo upload
+            if (photo) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    newReport.photo = e.target.result;
+                    reports.push(newReport);
+                    localStorage.setItem('reports', JSON.stringify(reports));
+                    showNotification('Report submitted successfully!', false);
+                    document.getElementById('reportForm').reset();
+                    document.getElementById('imagePreview').style.display = 'none';
+                    loadUserReports();
+                    updateStats();
+                }
+                reader.readAsDataURL(photo);
+            } else {
+                reports.push(newReport);
+                localStorage.setItem('reports', JSON.stringify(reports));
+                showNotification('Report submitted successfully!', false);
+                document.getElementById('reportForm').reset();
+                document.getElementById('imagePreview').style.display = 'none';
+                loadUserReports();
+                updateStats();
+            }
+        }
+
+        // Load approved reports
+        function loadApprovedReports() {
+            const reports = JSON.parse(localStorage.getItem('reports')) || [];
+            const approvedReports = reports.filter(report => report.status === 'approved');
+            const approvedReportsList = document.getElementById('approvedReportsList');
+            approvedReportsList.innerHTML = '';
+
+            approvedReports.forEach(report => {
+                const reportCard = document.createElement('div');
+                reportCard.className = 'report-card';
+                reportCard.innerHTML = `
+                    ${report.photo ? `<img src="${report.photo}" alt="${report.title}">` : ''}
+                    <div class="report-status status-approved">Approved</div>
+                    <h3>${report.title}</h3>
+                    <div class="report-details">
+                        <p><strong>Location:</strong> ${report.location}</p>
+                        <p><strong>Contact:</strong> ${report.contact}</p>
+                        ${report.facebook ? `<p><strong>Facebook:</strong> ${report.facebook}</p>` : ''}
+                        <p><strong>Description:</strong> ${report.description}</p>
+                        <p><strong>Urgency:</strong> ${report.urgency}</p>
+                        <p><strong>Reported by:</strong> ${report.userName}</p>
+                        <p><strong>Date:</strong> ${new Date(report.date).toLocaleDateString()}</p>
+                    </div>
+                `;
+                approvedReportsList.appendChild(reportCard);
+            });
+        }
+
+        // Load user reports
+        function loadUserReports() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) return;
+
+            const reports = JSON.parse(localStorage.getItem('reports')) || [];
+            const userReports = reports.filter(report => report.userId === currentUser.email);
+            const reportsList = document.getElementById('reportsList');
+            reportsList.innerHTML = '';
+
+            userReports.forEach(report => {
+                const reportCard = document.createElement('div');
+                reportCard.className = 'report-card';
+                reportCard.innerHTML = `
+                    ${report.photo ? `<img src="${report.photo}" alt="${report.title}">` : ''}
+                    <div class="report-status status-${report.status}">${report.status}</div>
+                    <h3>${report.title}</h3>
+                    <div class="report-details">
+                        <p><strong>Location:</strong> ${report.location}</p>
+                        <p><strong>Contact:</strong> ${report.contact}</p>
+                        ${report.facebook ? `<p><strong>Facebook:</strong> ${report.facebook}</p>` : ''}
+                        <p><strong>Description:</strong> ${report.description}</p>
+                        <p><strong>Urgency:</strong> ${report.urgency}</p>
+                        <p><strong>Date:</strong> ${new Date(report.date).toLocaleDateString()}</p>
+                    </div>
+                `;
+                reportsList.appendChild(reportCard);
+            });
+
+            // Load approved reports
+            loadApprovedReports();
+        }
+
+        // Update dashboard statistics
+        function updateStats() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) return;
+
+            const reports = JSON.parse(localStorage.getItem('reports')) || [];
+            const userReports = reports.filter(r => r.userId === currentUser.email);
+            
+            document.getElementById('myReports').textContent = userReports.length;
+            document.getElementById('approvedReports').textContent = userReports.filter(r => r.status === 'approved').length;
+            document.getElementById('pendingReports').textContent = userReports.filter(r => r.status === 'pending').length;
+        }
+
+        // Load notifications
+        function loadNotifications() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) return;
+
+            const notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+            const userNotifications = notifications.filter(n => n.userId === currentUser.email);
+            const unreadCount = userNotifications.filter(n => !n.read).length;
+
+            // Update notification badge
+            const badge = document.getElementById('notificationBadge');
+            badge.textContent = unreadCount;
+            badge.style.display = unreadCount > 0 ? 'block' : 'none';
+
+            // Update notifications panel
+            const panel = document.getElementById('notificationsPanel');
+            panel.innerHTML = '';
+
+            if (userNotifications.length === 0) {
+                panel.innerHTML = '<div class="notification-item">No notifications</div>';
+            } else {
+                userNotifications.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(notification => {
+                    const notificationElement = document.createElement('div');
+                    notificationElement.className = `notification-item ${notification.read ? '' : 'unread'}`;
+                    notificationElement.innerHTML = `
+                        <div>${notification.message}</div>
+                        <div class="date">${new Date(notification.date).toLocaleString()}</div>
+                    `;
+                    notificationElement.onclick = () => markNotificationAsRead(notification.id);
+                    panel.appendChild(notificationElement);
+                });
+            }
+        }
+
+        // Mark notification as read
+        function markNotificationAsRead(notificationId) {
+            const notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+            const notification = notifications.find(n => n.id === notificationId);
+            
+            if (notification) {
+                notification.read = true;
+                localStorage.setItem('notifications', JSON.stringify(notifications));
+                loadNotifications();
+            }
+        }
+
+        // Toggle notifications panel
+        function toggleNotifications() {
+            const panel = document.getElementById('notificationsPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Close notifications panel when clicking outside
+        document.addEventListener('click', (event) => {
+            const panel = document.getElementById('notificationsPanel');
+            const button = event.target.closest('button');
+            
+            if (!panel.contains(event.target) && !button) {
+                panel.style.display = 'none';
+            }
+        });
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadUserReports();
+            updateStats();
+            loadNotifications();
+        });
+    </script>
+</body>
+</html> 

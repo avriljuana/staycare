@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glassmorphism UI</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #d3d3d3, #f0f0f0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            
+        }
+        nav {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 10px 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-right: 20px;
+        }
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin-right: 20px;
+        }
+        .search-bar input {
+            border: none;
+            background: transparent;
+            outline: none;
+            padding: 5px;
+        }
+        .search-bar i {
+            color: #333;
+        }
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: #000000;
+            font-size: 18px;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        nav ul li a:hover, nav ul li a.active {
+            background: rgba(255, 92, 172, 0.3);
+            color: #0c0c0c;
+            opacity: 1;
+        }
+        .container {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            padding: 100px;
+            width: 50%;
+            border-radius: 10px;
+            background: rgba(165, 164, 164, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                width: 70%;
+                padding: 80px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                width: 90%;
+                padding: 50px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px;
+                width: 95%;
+            }
+        }
+
+        .content h1 {
+            font-size: 36px;
+            color: #333;
+        }
+        .content h2 {
+            font-size: 30px;
+            color: #ff5cac;
+        }
+        .content p {
+            font-size: 16px;
+            color: #333;
+            margin-top: 10px;
+        }
+        .read-more {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #ff5cac;
+            color: white;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .read-more:hover {
+            background: #e04b8d;
+        }
+        .container {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            padding: 100px;
+            width: 50%;
+            border-radius: 10px;
+            background: rgba(165, 164, 164, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .video-container img {
+            width: 500px;
+            border-radius: 10px;
+            animation: bounce 2s infinite;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                width: 70%;
+                padding: 80px;
+            }
+            .video-container img {
+                width: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                width: 90%;
+                padding: 50px;
+                text-align: center;
+            }
+            .video-container img {
+                width: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px;
+                width: 95%;
+            }
+            .video-container img {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+       
+      
+        .menu-icon {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+     
+        @media (max-width: 768px) {
+            .menu-icon {
+                display: block;
+            }
+            nav ul {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 60px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(255, 255, 255, 0.8);
+                width: 80%;
+                text-align: center;
+                padding: 10px;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            }
+            nav ul.active {
+                display: flex;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">🐾 Stray Care</div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search...">
+            <i class="fas fa-search"></i>
+        </div>
+        <div class="menu-icon" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+        <ul>
+            <li><a href="#" class="active"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="aboutus.html"><i class="fas fa-users"></i> About Us</a></li>
+            <li><a href="login.html"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="content">
+            <h1>Get to know</h1>
+            <h2>Everything</h2>
+            <h1>about Your Pet!</h1>
+            <p>Our facility provides professional care given in a clean, safe and home-like environment for your pet. Feel free to ask what you want to!</p>
+            
+        </div>
+        <div class="video-container">
+            <img src="02.couplefeeding.gif" alt="Pet Animation">
+        </div>
+    </div>
+    <script>
+        function toggleMenu() {
+            document.querySelector('nav ul').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

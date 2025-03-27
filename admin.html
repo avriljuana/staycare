@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stray Care - Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+            padding: 1rem 2rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar button {
+            background: white;
+            color: #ff6b6b;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            margin-top: 0.5rem;
+        }
+
+        .reports-section {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .report-list {
+            list-style: none;
+        }
+
+        .report-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .report-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .report-info {
+            flex-grow: 1;
+            margin-right: 2rem;
+        }
+
+        .report-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+        }
+
+        .report-details {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .report-details p {
+            margin: 0.3rem 0;
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-approve, .btn-reject {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn-approve {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+        }
+
+        .btn-approve:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(46, 204, 113, 0.2);
+        }
+
+        .btn-reject {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .btn-reject:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.2);
+        }
+
+        .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    color: #2c3e50;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 300px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: opacity 0.3s ease, transform 0.3s ease-out;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+        .notification.success {
+            border-left: 4px solid #2ecc71;
+        }
+
+        .notification.error {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .notification-icon {
+            font-size: 1.2rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #7f8c8d;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active {
+            color: #ff6b6b;
+            border-bottom-color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>🐾 StrayCare Admin</h1>
+        <button onclick="logout()">Logout</button>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard-grid">
+            <div class="card">
+                <h2>📊 Total Reports</h2>
+                <div class="stat-number" id="totalReports">0</div>
+                <div class="stat-label">Active reports in the system</div>
+            </div>
+            <div class="card">
+                <h2>👥 Registered Users</h2>
+                <div class="stat-number" id="totalUsers">0</div>
+                <div class="stat-label">Total user accounts</div>
+            </div>
+            <div class="card">
+                <h2>🏥 Urgent Cases</h2>
+                <div class="stat-number" id="urgentCases">0</div>
+                <div class="stat-label">Reports marked as urgent</div>
+            </div>
+        </div>
+
+        <div class="reports-section">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('pending')">Pending Reports</button>
+                <button class="tab" onclick="switchTab('approved')">Approved Reports</button>
+                <button class="tab" onclick="switchTab('rejected')">Rejected Reports</button>
+            </div>
+
+            <ul class="report-list" id="reportList">
+                <!-- Reports will be added here dynamically -->
+            </ul>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Check admin authentication
+        function checkAuth() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser || currentUser.role !== 'admin') {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Show notification
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${isError ? 'error' : 'success'}`;
+            notification.innerHTML = `
+                <span class="notification-icon">${isError ? '❌' : '✓'}</span>
+                <span>${message}</span>
+            `;
+            notification.style.display = 'flex';
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 300);
+            }, 3000);
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Switch between tabs
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            loadReports(tab);
+        }
+
+        // Load reports
+        function loadReports(status = 'pending') {
+            const reports = JSON.parse(localStorage.getItem('reports')) || [];
+            const filteredReports = reports.filter(r => r.status === status);
+            
+            const reportList = document.getElementById('reportList');
+            reportList.innerHTML = '';
+            
+            filteredReports.forEach((report, index) => {
+                const li = document.createElement('li');
+                li.className = 'report-item';
+                li.innerHTML = `
+                    <div class="report-info">
+                        <div class="report-title">${report.title}</div>
+                        <div class="report-details">
+                            <p><strong>Location:</strong> ${report.location}</p>
+                            <p><strong>Contact:</strong> ${report.contact}</p>
+                            ${report.facebook ? `<p><strong>Facebook:</strong> ${report.facebook}</p>` : ''}
+                            <p><strong>Description:</strong> ${report.description}</p>
+                            <p><strong>Date:</strong> ${new Date(report.date).toLocaleDateString()}</p>
+                            <p><strong>Urgency:</strong> ${report.urgency}</p>
+                        </div>
+                    </div>
+                    <div class="report-actions">
+                        <button onclick="updateReportStatus(${report.id}, 'approved')" class="btn-approve">
+                            <span>✓</span> Approve
+                        </button>
+                        <button onclick="updateReportStatus(${report.id}, 'rejected')" class="btn-reject">
+                            <span>✕</span> Reject
+                        </button>
+                    </div>
+                `;
+                reportList.appendChild(li);
+            });
+        }
+
+        // Update report status
+        function updateReportStatus(reportId, newStatus) {
+            const reports = JSON.parse(localStorage.getItem('reports')) || [];
+            const reportIndex = reports.findIndex(r => r.id === reportId);
+            
+            if (reportIndex !== -1) {
+                const report = reports[reportIndex];
+                const oldStatus = report.status;
+                report.status = newStatus;
+                
+                // If report is approved, create a notification for the user
+                if (newStatus === 'approved' && oldStatus !== 'approved') {
+                    const notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+                    notifications.push({
+                        id: Date.now(),
+                        userId: report.userId,
+                        message: `Your report "${report.title}" has been approved!`,
+                        date: new Date().toISOString(),
+                        read: false
+                    });
+                    localStorage.setItem('notifications', JSON.stringify(notifications));
+                }
+                
+                localStorage.setItem('reports', JSON.stringify(reports));
+                showNotification(`Report ${newStatus} successfully`, false);
+                loadReports();
+                updateDashboardStats();
+            }
+        }
+
+        // View report details
+        function viewReportDetails(index) {
+            const reports = JSON.parse(localStorage.getItem('reports')) || [];
+            const report = reports[index];
+            alert(`
+                Report Details:
+                Title: ${report.title}
+                Location: ${report.location}
+                Description: ${report.description}
+                Reporter: ${report.reporter}
+                Date: ${report.date}
+                Status: ${report.status}
+                ${report.urgent ? '⚠️ Urgent Case' : ''}
+            `);
+        }
+
+        // Update dashboard statistics
+        function updateDashboardStats() {
+            const reports = JSON.parse(localStorage.getItem('reports')) || [];
+            const totalReports = reports.length;
+            const pendingReports = reports.filter(r => r.status === 'pending').length;
+            const approvedReports = reports.filter(r => r.status === 'approved').length;
+            const rejectedReports = reports.filter(r => r.status === 'rejected').length;
+
+            document.getElementById('totalReports').textContent = totalReports;
+            document.getElementById('totalUsers').textContent = JSON.parse(localStorage.getItem('users'))?.length || 0;
+            document.getElementById('urgentCases').textContent = reports.filter(r => r.urgent).length;
+            document.getElementById('pendingReports').textContent = pendingReports;
+            document.getElementById('approvedReports').textContent = approvedReports;
+            document.getElementById('rejectedReports').textContent = rejectedReports;
+        }
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadReports();
+            updateDashboardStats();
+        });
+    </script>
+</body>
+</html> 
