@@ -1,3 +1,4 @@
+85% of storage used … If you run out, you can't create, edit and upload files. Get 100 GB of storage for ₱119.00 ₱29.00/month for 2 months.
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,6 +26,8 @@ body {
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 100;
 }
 
 .navbar h1 {
@@ -62,6 +65,7 @@ body {
 
 .notification-container {
     position: relative;
+    z-index: 1000;
 }
 
 .notification-btn {
@@ -70,11 +74,70 @@ body {
 }
 
 .notifications-panel {
-    display: none !important; /* Ensures it's always hidden */
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 350px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    margin-top: 10px;
+    display: none;
+    z-index: 1000;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
-.notification {
-    display: none !important; /* Ensures notification does not appear */
+.notification-container:hover .notifications-panel {
+    display: block;
+}
+
+.notifications-header {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    background: #f8f9fa;
+    border-radius: 12px 12px 0 0;
+}
+
+.notifications-header h3 {
+    color: #2c3e50;
+    margin: 0;
+    font-size: 16px;
+}
+
+.notifications-list {
+    padding: 0;
+}
+
+.notification-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.3s;
+}
+
+.notification-item:hover {
+    background-color: #f8f9fa;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-title {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.notification-details {
+    font-size: 14px;
+    color: #666;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: #999;
+    margin-top: 5px;
 }
 
 .container {
@@ -208,6 +271,18 @@ body {
     .approved-reports {
         padding: 1.5rem;
     }
+
+    .navbar {
+        padding: 1rem;
+    }
+
+    .notifications-panel {
+        position: fixed;
+        top: 70px;
+        left: 20px;
+        right: 20px;
+        width: auto;
+    }
 }
 
 /* Report Card Styles */
@@ -329,12 +404,17 @@ body {
         <div class="navbar-buttons">
             <button onclick="window.location.href='home.html'">🏠 Home</button>
             <div class="notification-container">
-                <button class="notification-btn" onclick="toggleNotifications()">
+                <button class="notification-btn">
                     🔔 Notifications
                     <span class="notification-badge" id="notificationBadge">0</span>
                 </button>
                 <div class="notifications-panel" id="notificationsPanel">
-                    Notifications will be added here
+                    <div class="notifications-header">
+                        <h3>Approved Reports</h3>
+                    </div>
+                    <div class="notifications-list" id="notificationsList">
+                        <!-- Notifications will be loaded here -->
+                    </div>
                 </div>
             </div>
             <button onclick="logout()">Logout</button>
@@ -611,70 +691,54 @@ body {
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
             if (!currentUser) return;
 
-            const notifications = JSON.parse(localStorage.getItem('notifications')) || [];
-            const userNotifications = notifications.filter(n => n.userId === currentUser.email);
-            const unreadCount = userNotifications.filter(n => !n.read).length;
-
-            // Update notification badge
+            const reports = JSON.parse(localStorage.getItem('reports')) || [];
+            const approvedReports = reports.filter(r => r.status === 'approved');
+            const notificationsList = document.getElementById('notificationsList');
             const badge = document.getElementById('notificationBadge');
-            badge.textContent = unreadCount;
-            badge.style.display = unreadCount > 0 ? 'block' : 'none';
 
-            // Update notifications panel
-            const panel = document.getElementById('notificationsPanel');
-            panel.innerHTML = '';
+            // Update badge
+            badge.textContent = approvedReports.length;
+            badge.style.display = approvedReports.length > 0 ? 'block' : 'none';
 
-            if (userNotifications.length === 0) {
-                panel.innerHTML = '<div class="notification-item">No notifications</div>';
-            } else {
-                userNotifications.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(notification => {
-                    const notificationElement = document.createElement('div');
-                    notificationElement.className = `notification-item ${notification.read ? '' : 'unread'}`;
-                    notificationElement.innerHTML = `
-                        <div>${notification.message}</div>
-                        <div class="date">${new Date(notification.date).toLocaleString()}</div>
-                    `;
-                    notificationElement.onclick = () => markNotificationAsRead(notification.id);
-                    panel.appendChild(notificationElement);
-                });
+            // Clear existing notifications
+            notificationsList.innerHTML = '';
+
+            if (approvedReports.length === 0) {
+                notificationsList.innerHTML = `
+                    <div class="notification-item">
+                        <div class="notification-details">No approved reports yet</div>
+                    </div>
+                `;
+                return;
             }
+
+            // Add approved reports to notifications
+            approvedReports.forEach(report => {
+                const notificationItem = document.createElement('div');
+                notificationItem.className = 'notification-item';
+                notificationItem.innerHTML = `
+                    <div class="notification-title">${report.title}</div>
+                    <div class="notification-details">
+                        <div><strong>Location:</strong> ${report.location}</div>
+                        <div><strong>Urgency:</strong> ${report.urgency}</div>
+                        <div><strong>Status:</strong> <span style="color: #2f855a">Approved</span></div>
+                    </div>
+                    <div class="notification-time">${new Date(report.date).toLocaleDateString()}</div>
+                `;
+                notificationsList.appendChild(notificationItem);
+            });
         }
 
-        // Mark notification as read
-        function markNotificationAsRead(notificationId) {
-            const notifications = JSON.parse(localStorage.getItem('notifications')) || [];
-            const notification = notifications.find(n => n.id === notificationId);
-            
-            if (notification) {
-                notification.read = true;
-                localStorage.setItem('notifications', JSON.stringify(notifications));
-                loadNotifications();
-            }
-        }
-
-        // Toggle notifications panel
-        function toggleNotifications() {
-            const panel = document.getElementById('notificationsPanel');
-            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-        }
-
-        // Close notifications panel when clicking outside
-        document.addEventListener('click', (event) => {
-            const panel = document.getElementById('notificationsPanel');
-            const button = event.target.closest('button');
-            
-            if (!panel.contains(event.target) && !button) {
-                panel.style.display = 'none';
-            }
-        });
-
-        // Initialize the dashboard
+        // Initialize notifications on page load
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
             loadUserReports();
             updateStats();
             loadNotifications();
         });
+
+        // Refresh notifications periodically
+        setInterval(loadNotifications, 30000);
     </script>
 </body>
 </html> 
